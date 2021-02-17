@@ -1,5 +1,6 @@
 // Assignment Code
 var generateBtn = document.querySelector("#generate");
+var passwordText = document.querySelector("#password");
 
 //Generate and return the password pool
 function generatePassPool() {
@@ -56,7 +57,7 @@ function generatePassword() {
 
   // Generate password following given criteria
   for (i = 0; i < passLength; i++){
-    password += passPool[Math.floor(Math.random() * (passPool.length - 1))];
+    password += passPool[Math.floor(Math.random() * passPool.length)];
   }
 
   // Return generated password
@@ -66,11 +67,32 @@ function generatePassword() {
 // Write password to the #password input
 function writePassword() {
   var password = generatePassword();
-  var passwordText = document.querySelector("#password");
 
   passwordText.value = password;
 
+  // Add note to click password field to copy generated password if not already visible
+  var copyText = document.querySelector("#copyText");
+  if (copyText.dataset.state === "hidden") {
+    copyText.dataset.state = "show"
+    copyText.textContent = "Click the password box to copy your new password!";
+  }
+}
+
+// Function to copy generated password if you click the box
+function copyPassword() {
+  // Select the text field
+  passwordText.select();
+  passwordText.setSelectionRange(0, 127); // For mobile devices
+
+  // Copy the password text
+  document.execCommand("copy");
+
+  // Alert that the text has been copied
+  alert("Copied the password " + passwordText.value + " to clipboard");
 }
 
 // Add event listener to generate button
 generateBtn.addEventListener("click", writePassword);
+
+// Add event listener to copy text if password box is clicked
+passwordText.addEventListener("click", copyPassword);
