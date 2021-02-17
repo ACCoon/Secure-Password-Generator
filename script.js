@@ -2,28 +2,36 @@
 var generateBtn = document.querySelector("#generate");
 var passwordText = document.querySelector("#password");
 
+var password;
+
 //Generate and return the password pool
 function generatePassPool() {
   var passPool = "";
+  var numbers = "0123456789";
   var letters = "abcdefghijklmnopqrstuvwxyz";
+  var special = "!@#$%^&*()-_=+`~?/;:\\\'\"";
 
   while(passPool === "") {
 
-    // Ask what types of characters to use in the password, and add chosen characters to password pool
+    // Ask what types of characters to use in the password, and add chosen characters to password pool. Add random character of the chosen type to the password.
     if(window.confirm("Do you want to use numbers?")) {
-      passPool += "0123456789";
+      passPool += numbers;
+      password += numbers[Math.floor(Math.random() * numbers.length)];
     }
 
     if(window.confirm("Do you want to use lowercase letters?")) {
       passPool += letters;
+      password += letters[Math.floor(Math.random() * letters.length)];
     }
 
     if(window.confirm("Do you want to use uppercase letters?")) {
-      passPool +=letters.toUpperCase();
+      passPool += letters.toUpperCase();
+      password += letters[Math.floor(Math.random() * letters.length)].toUpperCase();
     }
     
     if(window.confirm("Do you want to use special characters?")) {
-      passPool += "!@#$%^&*()-_=+`~?/\\\'\"";
+      passPool += special;
+      password += special[Math.floor(Math.random() * special.length)];
     }
 
     // If no character types are chosen, notify user before looping to prompt for character types again
@@ -35,10 +43,27 @@ function generatePassPool() {
   return passPool;
 }
 
+// Shuffle the password string to distribute guaranteed characters
+function shufflePassword() {
+  // Convert the password string to an array
+  var arrayPass = password.split("");
+  var shufflePass = "";
+  var i;
+
+  // Loop to randomly select elements from the array and add them to shufflePass before removing from the array
+  while (arrayPass.length > 0) {
+    i = Math.floor(Math.random() * arrayPass.length);
+    shufflePass += arrayPass.splice(i, 1);
+  }
+
+  // Save shufflePass as new password
+  password = shufflePass;
+}
+
 // Generate the password
 function generatePassword() {
   var passLength;
-  var password = "";
+  password = "";
 
   // Get and validate passLength, if invalid then loop
   do {
@@ -55,10 +80,13 @@ function generatePassword() {
   // Call to generate character pool for password
   var passPool = generatePassPool();
 
-  // Generate password following given criteria
-  for (i = 0; i < passLength; i++){
+  // Generate the rest of the password following given criteria
+  while (password.length < passLength){
     password += passPool[Math.floor(Math.random() * passPool.length)];
   }
+
+  // Call to shuffle the generated password to prevent guaranteed characters from being frontloaded
+  shufflePassword();
 
   // Return generated password
   return password;
